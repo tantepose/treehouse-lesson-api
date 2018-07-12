@@ -25,13 +25,25 @@ mongoose.connect('mongodb://localhost:27017/qa');
 // monitor status of requests
 var db = mongoose.connection;
 
-// events
+// errors
 db.on('error', function (err) {
     console.log('Ånei, mongoose error yo:', err);
 });
 
-db.once('open', function () { // once er bare første gang det skjer, så ikke lytter hele tida
+// once er bare første gang det skjer, så ikke lytter etter dette hele tida
+db.once('open', function () {
     console.log('databasen er live');
+});
+
+// tillatt cross origin requests, CORS
+app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*'); // tillat alle domains
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    if(req.method === 'OPTIONS') { // preflight requests
+        res.header('Acces-Control-Allow-Methods', 'PUT, POST, DELETE'); // tillatt disse
+        return res.status(200).json({});
+    }
+    next();
 });
 
 // bruk routeren

@@ -29,7 +29,7 @@ AnswerSchema.method('update', function (updates, callback) {
 });
 
 // stemmelogikk
-AnswerSchema.method('update', function (vote, callback) {
+AnswerSchema.method('vote', function (vote, callback) {
     if (vote === 'up') {
         this.votes += 1;
     } else {
@@ -45,7 +45,7 @@ var QuestionSchema = new Schema ({
 });
 
 // så ting sorteres med en gang folk stemmer på svar
-QuestionSchema.pre('save', function () {
+QuestionSchema.pre('save', function (next) {
     this.answers.sort(sortAnswers);
     next();
 });

@@ -10,7 +10,7 @@ var Question = require('./models').Question;
 router.param('qID', function (req, res, next, id) {
     // return spesific question
     Question.findById(req.params.qID, function (err, doc) {
-        if (error) return next(err);
+        if (err) return next(err);
         if (!doc) {
             err = new Error('Question not found!');
             err.status = 404;
@@ -58,7 +58,7 @@ router.get('/:qID', function (req, res, next) {
 router.post('/', function (req, res, next) {
     // create question
     var question = new Question(req.body); // lage nytt spørsmål
-    question.save(function (err, question) { // lagre nytt spørsmål
+    question.save(function (err, question, next) { // lagre nytt spørsmål
         if (err) return next(err); // error
         res.status(201); // gi status
         res.json(question); // returnere json
@@ -76,7 +76,7 @@ router.post('/:qID/answers', function (req, res, next) {
 });
 
 // PUT /questions/:qID/answers/:aID
-router.put('/:qID/answers/:aID', function (req, res) {
+router.put('/:qID/answers/:aID', function (req, res, next) {
     // edit answer
     req.answer.update(req.body, function (err, result) {
         if(err) return next(err);
@@ -84,14 +84,32 @@ router.put('/:qID/answers/:aID', function (req, res) {
     });
 });
 
+// PUT /questions/:qID
+router.put('/:qID', function (req, res, next) {
+    // edit answer
+    req.question.update(req.body, function (err, result) {
+        if(err) return next(err);
+        res.json(result);
+    });
+});
+
 // DELETE /questions/:qID/answers/:aID
-router.delete('/:qID/answers/:aID', function (req, res) {
+router.delete('/:qID/answers/:aID', function (req, res, next) {
     // delete answer
-    req.answer.remove(function(err) {
+    req.answer.remove(function (err) {
         req.question.save(function (err, question) {
             if(err) return next(err);
             res.json(question);
         });
+    });
+});
+
+// DELETE /questions/:qID
+router.delete('/:qID', function (req, res, next) {
+    // delete answer
+    req.question.remove(function (err) {
+        if(err) return next(err);
+        res.json({'message': 'Deleted!'});
     });
 });
 
