@@ -13,6 +13,27 @@ var logger = require('morgan');
 app.use(jsonParser());
 app.use(logger('dev'));
 
+// MONGOOSE 
+
+// få inn mongoose
+var mongoose = require('mongoose');
+
+// connect til mongodb server
+// mongodb er protokoll, så lokal maskin, standardport til mongodb, så vår db
+mongoose.connect('mongodb://localhost:27017/qa');
+
+// monitor status of requests
+var db = mongoose.connection;
+
+// events
+db.on('error', function (err) {
+    console.log('Ånei, mongoose error yo:', err);
+});
+
+db.once('open', function () { // once er bare første gang det skjer, så ikke lytter hele tida
+    console.log('databasen er live');
+});
+
 // bruk routeren
 app.use('/questions', routes);
 
